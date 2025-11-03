@@ -210,8 +210,7 @@ MIT License - see [LICENSE](./LICENSE)
 ## Community
 
 - **Main Repo:** [Boojy Suite](https://github.com/tsbujacncl/boojy)
-- **Website:** [boojy.app](https://boojy.app) (coming soon)
-- **Discord:** (coming soon)
+- **Website:** [boojy.org](https://boojy.org) (coming soon)
 
 ---
 
