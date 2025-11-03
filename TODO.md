@@ -1,40 +1,40 @@
 # Boojy Draw - Implementation TODO
 
-## Phase 1: Foundation & UI Shell (Days 1-3)
+## Phase 1: Foundation & UI Shell (Days 1-3) ✅ COMPLETE
 
-### Step 1: Project Setup & Dependencies
-- [ ] Add `flutter_riverpod` to pubspec.yaml
-- [ ] Add `image` package for image manipulation
-- [ ] Add `path_provider` for file I/O
-- [ ] Add `file_picker` for file dialogs
-- [ ] Configure desktop window settings (min/initial size)
-- [ ] Set up Material 3 theming (dark + light)
+### Step 1: Project Setup & Dependencies ✅
+- [x] Add `flutter_riverpod` to pubspec.yaml
+- [x] Add `image` package for image manipulation
+- [x] Add `path_provider` for file I/O
+- [x] Add `file_picker` for file dialogs
+- [x] Configure desktop window settings (min/initial size)
+- [x] Set up Material 3 theming (dark + light)
 
-### Step 2: Main Window Layout Structure
-- [ ] Create `AppShell` widget (main container)
-- [ ] Build `TopBar` (menu bar + toolbar)
-- [ ] Build `LeftPanel` (tool options, collapsible)
-- [ ] Build `CenterArea` (canvas viewport)
-- [ ] Build `RightPanel` (layers + color picker, collapsible)
-- [ ] Build `BottomBar` (status info)
-- [ ] Add panel collapse/expand functionality
-- [ ] Add keyboard shortcut for hide all panels (Tab)
+### Step 2: Main Window Layout Structure ✅
+- [x] Create `AppShell` widget (main container)
+- [x] Build `TopBar` (menu bar + toolbar)
+- [x] Build `LeftPanel` (tool options, collapsible)
+- [x] Build `CenterArea` (canvas viewport)
+- [x] Build `RightPanel` (layers + color picker, collapsible)
+- [x] Build `BottomBar` (status info)
+- [x] Add panel collapse/expand functionality
+- [ ] Add keyboard shortcut for hide all panels (Tab) - Deferred to Phase 8
 
-### Step 3: Panel Widgets (Placeholder Content)
-- [ ] Create `ToolOptionsPanel` widget
-- [ ] Create `CanvasViewport` widget with placeholder grid
-- [ ] Create `LayersPanel` widget with empty list
-- [ ] Create `ColorPickerPanel` widget with basic color square
-- [ ] Create `StatusBar` widget with static text
-- [ ] Wire up panel state management (Riverpod)
+### Step 3: Panel Widgets (Placeholder Content) ✅
+- [x] Create `ToolOptionsPanel` widget (integrated in AppShell)
+- [x] Create `CanvasViewport` widget with placeholder grid
+- [x] Create `LayersPanel` widget with empty list
+- [x] Create `ColorPickerPanel` widget with basic color square
+- [x] Create `StatusBar` widget with static text
+- [x] Wire up panel state management (Riverpod - local state for now)
 
-### Step 4: Theming & Polish
-- [ ] Implement Material 3 dark theme
-- [ ] Implement Material 3 light theme
-- [ ] Add panel resize handles (draggable splitters)
-- [ ] Add proper spacing and shadows
-- [ ] Add panel borders and visual hierarchy
-- [ ] Test panel collapse/resize behavior
+### Step 4: Theming & Polish ✅
+- [x] Implement Material 3 dark theme
+- [x] Implement Material 3 light theme
+- [ ] Add panel resize handles (draggable splitters) - Deferred to v1.0
+- [x] Add proper spacing and shadows
+- [x] Add panel borders and visual hierarchy
+- [x] Test panel collapse/resize behavior
 
 ---
 
