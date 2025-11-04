@@ -7,7 +7,10 @@ import 'panels/color_picker_panel.dart';
 import 'widgets/tool_selector.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/brush_controller.dart';
+import '../providers/tool_controller.dart';
+import '../providers/selection_controller.dart';
 import '../models/brush_stroke.dart';
+import '../models/tool_type.dart';
 
 /// Main application shell with collapsible panels
 /// Layout: TopBar | LeftPanel | Canvas | RightPanel | BottomBar
@@ -141,6 +144,9 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget _buildLeftPanel() {
     final brushSettings = ref.watch(brushControllerProvider);
     final brushController = ref.read(brushControllerProvider.notifier);
+    final toolState = ref.watch(toolControllerProvider);
+    final selectionState = ref.watch(selectionControllerProvider);
+    final selectionController = ref.read(selectionControllerProvider.notifier);
 
     return Container(
       width: _leftPanelWidth,
@@ -167,52 +173,100 @@ class _AppShellState extends ConsumerState<AppShell> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(
-                  'Brush Settings',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 16),
+                // Brush tool options
+                if (toolState.activeTool == ToolType.brush) ...[
+                  Text(
+                    'Brush Settings',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 16),
 
-                // Brush size slider
-                _buildBrushSlider(
-                  'Size',
-                  brushSettings.size,
-                  1,
-                  500,
-                  (value) => brushController.setSize(value),
-                ),
-                const SizedBox(height: 16),
+                  // Brush size slider
+                  _buildSlider(
+                    'Size',
+                    brushSettings.size,
+                    1,
+                    500,
+                    (value) => brushController.setSize(value),
+                  ),
+                  const SizedBox(height: 16),
 
-                // Opacity slider
-                _buildBrushSlider(
-                  'Opacity',
-                  brushSettings.opacity * 100,
-                  0,
-                  100,
-                  (value) => brushController.setOpacity(value / 100),
-                ),
-                const SizedBox(height: 16),
+                  // Opacity slider
+                  _buildSlider(
+                    'Opacity',
+                    brushSettings.opacity * 100,
+                    0,
+                    100,
+                    (value) => brushController.setOpacity(value / 100),
+                  ),
+                  const SizedBox(height: 16),
 
-                // Pressure curve dropdown
-                Text(
-                  'Pressure Curve',
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<PressureCurve>(
-                  initialValue: brushSettings.pressureCurve,
-                  items: PressureCurve.values
-                      .map((curve) => DropdownMenuItem(
-                            value: curve,
-                            child: Text(curve.displayName),
-                          ))
-                      .toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      brushController.setPressureCurve(value);
-                    }
-                  },
-                ),
+                  // Pressure curve dropdown
+                  Text(
+                    'Pressure Curve',
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<PressureCurve>(
+                    initialValue: brushSettings.pressureCurve,
+                    items: PressureCurve.values
+                        .map((curve) => DropdownMenuItem(
+                              value: curve,
+                              child: Text(curve.displayName),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        brushController.setPressureCurve(value);
+                      }
+                    },
+                  ),
+                ],
+
+                // Selection tool options
+                if (toolState.activeTool == ToolType.rectangleSelection ||
+                    toolState.activeTool == ToolType.lassoSelection ||
+                    toolState.activeTool == ToolType.magicWand) ...[
+                  Text(
+                    'Selection Settings',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Magic Wand tolerance slider
+                  if (toolState.activeTool == ToolType.magicWand) ...[
+                    _buildSlider(
+                      'Tolerance',
+                      selectionState.tolerance.toDouble(),
+                      0,
+                      100,
+                      (value) => selectionController.setTolerance(value.toInt()),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Feather slider (all selection tools)
+                  _buildSlider(
+                    'Feather',
+                    selectionState.feather,
+                    0,
+                    100,
+                    (value) => selectionController.setFeather(value),
+                  ),
+                  const SizedBox(height: 16),
+
+                  Text(
+                    'Modifiers',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '• Shift: Add to selection\n'
+                    '• Alt: Subtract from selection\n'
+                    '• Shift+Alt: Intersect selection',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
               ],
             ),
           ),
@@ -393,8 +447,8 @@ class _AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  /// Brush slider widget with label and callback
-  Widget _buildBrushSlider(
+  /// Slider widget with label and callback
+  Widget _buildSlider(
     String label,
     double value,
     double min,

@@ -11,6 +11,7 @@ import '../tools/brush_tool.dart';
 import '../tools/selection/rectangle_selection_tool.dart';
 import '../tools/selection/lasso_selection_tool.dart';
 import '../tools/selection/magic_wand_tool.dart';
+import '../tools/transform_tool.dart';
 
 /// Main canvas viewport widget
 class CanvasViewport extends ConsumerWidget {
@@ -82,10 +83,9 @@ class CanvasViewport extends ConsumerWidget {
       case ToolType.magicWand:
         return MagicWandTool(child: child);
       case ToolType.transform:
-        // TODO: Implement transform tool
-        return child;
+        return TransformTool(child: child);
       case ToolType.eyedropper:
-        // TODO: Implement eyedropper tool
+        // TODO: Implement eyedropper tool (Phase 7+)
         return child;
     }
   }
