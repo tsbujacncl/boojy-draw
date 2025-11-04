@@ -149,34 +149,34 @@
 
 ## Phase 6: Selection & Transform (Days 13-14) 🚧 IN PROGRESS
 
-### Step 13: Selection Tools (Partially Complete)
+### Step 13: Selection Tools (Core Complete, Integration Pending)
 - [x] Create `Selection` model (path, feather, mode)
 - [x] Create `SelectionController` (Riverpod StateNotifier)
-- [x] Implement Rectangle selection tool foundation
+- [x] Implement Rectangle selection tool with modifiers
+- [x] Implement Lasso selection tool (freehand path)
+- [x] Implement Magic Wand tool with flood fill algorithm
 - [x] Add selection modifiers: Add (Shift), Subtract (Alt), Intersect (Shift+Alt)
-- [ ] Integrate Rectangle tool into canvas (needs tool switching system)
-- [ ] Implement Lasso selection tool (L key, freehand path)
-- [ ] Implement Magic Wand tool (W key, flood fill)
-- [ ] Add tolerance slider for Magic Wand (0-100, default 32)
+- [ ] Integrate tools into canvas (needs tool switching system)
+- [ ] Add tolerance slider UI for Magic Wand (0-100, default 32)
 - [ ] Add selection overlay rendering (marching ants animation)
-- [ ] Add feather option slider (0-100px)
-- [ ] Add Select All (Cmd+A)
-- [ ] Add Deselect (Cmd+D)
-- [ ] Add keyboard shortcuts (M, L, W keys)
+- [ ] Add feather option slider UI (0-100px)
+- [ ] Implement Select All command (Cmd+A)
+- [ ] Implement Deselect command (Cmd+D)
+- [ ] Add keyboard shortcuts (M, L, W keys) - needs input handler
 
-### Step 14: Transform Operations (Not Started)
-- [ ] Create transform overlay with handles
-- [ ] Implement Move (drag selection, arrow keys)
+### Step 14: Transform Operations (Model Created, Implementation Pending)
+- [x] Create `TransformState` model (matrix, bounds, type)
+- [ ] Create TransformController (Riverpod StateNotifier)
+- [ ] Create transform overlay widget with 8 handles
+- [ ] Implement Move (drag selection, arrow keys for nudge)
 - [ ] Implement Scale (corner handles, Shift = constrain aspect)
-- [ ] Implement Rotate (rotate handle, Shift = snap 15°)
-- [ ] Implement Flip Horizontal
-- [ ] Implement Flip Vertical
-- [ ] Add Apply transform (Enter key, rasterize)
+- [ ] Implement Rotate (rotate handle above, Shift = snap 15°)
+- [ ] Implement Flip Horizontal / Vertical
+- [ ] Add Apply transform (Enter key, rasterize with bicubic)
 - [ ] Add Cancel transform (Esc key)
-- [ ] Use bicubic interpolation for scale/rotate quality
-- [ ] Test with anti-aliasing
+- [ ] Test with anti-aliasing and quality settings
 
-**Progress**: Foundation complete (Selection model, controller, Rectangle tool). Remaining: Lasso, Magic Wand, marching ants, transforms, integration.
+**Progress**: All selection tools implemented (Rectangle, Lasso, Magic Wand). Transform model created. Remaining: UI integration, marching ants animation, transform operations, keyboard shortcuts.
 
 ---
 
