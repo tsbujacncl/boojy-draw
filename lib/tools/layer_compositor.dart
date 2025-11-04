@@ -24,10 +24,16 @@ class LayerCompositor {
       );
     }
 
+    // Translate canvas to center coordinates (strokes use centered coords)
+    canvas.save();
+    canvas.translate(size.width / 2, size.height / 2);
+
     // Render all strokes
     for (final stroke in strokes) {
       BrushEngine.renderStroke(canvas, stroke);
     }
+
+    canvas.restore();
 
     final picture = recorder.endRecording();
     return await picture.toImage(size.width.toInt(), size.height.toInt());
@@ -54,12 +60,17 @@ class LayerCompositor {
         canvas.drawImage(layer.image!, Offset.zero, paint);
       }
 
-      // If layer has strokes, render them
+      // If layer has strokes, render them (translate for centered coords)
       if (layerStrokes != null && layerStrokes.containsKey(layer.id)) {
+        canvas.save();
+        canvas.translate(canvasSize.width / 2, canvasSize.height / 2);
+
         final strokes = layerStrokes[layer.id]!;
         for (final stroke in strokes) {
           BrushEngine.renderStroke(canvas, stroke);
         }
+
+        canvas.restore();
       }
 
       canvas.restore();
@@ -86,12 +97,18 @@ class LayerCompositor {
       canvas.drawImage(layer.image!, Offset.zero, Paint());
     }
 
+    // Translate canvas to center coordinates (strokes use centered coords)
+    canvas.save();
+    canvas.translate(size.width / 2, size.height / 2);
+
     // Draw strokes
     if (strokes != null) {
       for (final stroke in strokes) {
         BrushEngine.renderStroke(canvas, stroke);
       }
     }
+
+    canvas.restore();
 
     final picture = recorder.endRecording();
     return await picture.toImage(size.width.toInt(), size.height.toInt());
