@@ -12,6 +12,7 @@ import '../providers/tool_controller.dart';
 import '../providers/selection_controller.dart';
 import '../providers/document_controller.dart';
 import '../providers/layer_stack_controller.dart';
+import '../providers/history_controller.dart';
 import '../services/file_io_service.dart';
 import '../models/brush_stroke.dart';
 import '../models/tool_type.dart';
@@ -112,6 +113,41 @@ class _AppShellState extends ConsumerState<AppShell> {
           const ToolSelector(),
 
           const Spacer(),
+
+          // History (Undo/Redo)
+          Consumer(
+            builder: (context, ref, child) {
+              final historyState = ref.watch(historyControllerProvider);
+              final historyController = ref.read(historyControllerProvider.notifier);
+
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.undo),
+                    tooltip: 'Undo (Cmd+Z)',
+                    onPressed: historyState.canUndo
+                        ? () => historyController.undo()
+                        : null,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.redo),
+                    tooltip: 'Redo (Cmd+Shift+Z)',
+                    onPressed: historyState.canRedo
+                        ? () => historyController.redo()
+                        : null,
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 1,
+                    height: 24,
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              );
+            },
+          ),
 
           // Quick tools
           IconButton(
@@ -428,21 +464,52 @@ class _AppShellState extends ConsumerState<AppShell> {
 
           const Spacer(),
 
-          // Undo/Redo
-          IconButton(
-            icon: const Icon(Icons.undo, size: 18),
-            tooltip: 'Undo (Cmd+Z)',
-            onPressed: () {},
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.redo, size: 18),
-            tooltip: 'Redo (Cmd+Shift+Z)',
-            onPressed: () {},
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
+          // Undo/Redo status
+          Consumer(
+            builder: (context, ref, child) {
+              final historyState = ref.watch(historyControllerProvider);
+              final historyController = ref.read(historyControllerProvider.notifier);
+
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Undo count indicator
+                  if (historyState.undoCount > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Text(
+                        '${historyState.undoCount} action${historyState.undoCount > 1 ? 's' : ''}',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+                  IconButton(
+                    icon: const Icon(Icons.undo, size: 18),
+                    tooltip: historyState.canUndo
+                        ? 'Undo ${historyState.undoDescription} (Cmd+Z)'
+                        : 'Nothing to undo',
+                    onPressed: historyState.canUndo
+                        ? () => historyController.undo()
+                        : null,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.redo, size: 18),
+                    tooltip: historyState.canRedo
+                        ? 'Redo ${historyState.redoDescription} (Cmd+Shift+Z)'
+                        : 'Nothing to redo',
+                    onPressed: historyState.canRedo
+                        ? () => historyController.redo()
+                        : null,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(width: 16),
 

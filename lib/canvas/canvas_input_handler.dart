@@ -6,6 +6,7 @@ import '../providers/canvas_controller.dart';
 import '../providers/tool_controller.dart';
 import '../providers/selection_controller.dart';
 import '../providers/document_controller.dart';
+import '../providers/history_controller.dart';
 import '../models/tool_type.dart';
 import '../ui/dialogs/file_dialogs.dart';
 
@@ -150,6 +151,21 @@ class _CanvasInputHandlerState extends ConsumerState<CanvasInputHandler> {
       // Cmd/Ctrl + N (New)
       if (isModifier && event.logicalKey == LogicalKeyboardKey.keyN) {
         _handleNew();
+        return KeyEventResult.handled;
+      }
+
+      // Undo/Redo commands
+      final historyController = ref.read(historyControllerProvider.notifier);
+
+      // Cmd/Ctrl + Z (Undo)
+      if (isModifier && !isShift && event.logicalKey == LogicalKeyboardKey.keyZ) {
+        historyController.undo();
+        return KeyEventResult.handled;
+      }
+
+      // Cmd/Ctrl + Shift + Z (Redo)
+      if (isModifier && isShift && event.logicalKey == LogicalKeyboardKey.keyZ) {
+        historyController.redo();
         return KeyEventResult.handled;
       }
 

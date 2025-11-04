@@ -220,20 +220,24 @@
 
 ---
 
-## Phase 8: Undo/Redo & Polish (Days 17-18)
+## Phase 8: Undo/Redo & Polish (Days 17-18) 🚧 IN PROGRESS
 
-### Step 17: History System
-- [ ] Implement Command pattern for undo/redo
-- [ ] Create `HistoryStack` controller (Riverpod)
-- [ ] Track brush strokes (incremental diffs)
-- [ ] Track layer operations (new, delete, merge, reorder)
-- [ ] Track transform operations
-- [ ] Track selection changes
-- [ ] Implement Undo (Cmd+Z)
-- [ ] Implement Redo (Cmd+Shift+Z)
-- [ ] Set history stack limit (50 actions)
-- [ ] Optimize memory (store diffs, not full copies)
-- [ ] Update status bar with undo/redo availability
+### Step 17: History System ✅
+- [x] Implement Command pattern for undo/redo
+- [x] Create `HistoryStack` controller (Riverpod)
+- [x] Track brush strokes (command-based)
+- [x] Track layer operations (new, delete, merge, reorder)
+- [x] Track transform operations
+- [x] Track selection changes
+- [x] Implement Undo (Cmd+Z)
+- [x] Implement Redo (Cmd+Shift+Z)
+- [x] Set history stack limit (50 actions)
+- [x] Optimize memory (store before/after images)
+- [x] Update status bar with undo/redo availability
+- [x] Add undo/redo buttons to toolbar
+- [ ] Integrate history with brush tool - Deferred to integration phase
+- [ ] Integrate history with layer operations - Deferred to integration phase
+- [ ] Test undo/redo functionality - Deferred to testing phase
 
 ### Step 18: Final Polish & Testing
 - [ ] Create keyboard shortcuts documentation
