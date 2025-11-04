@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'canvas_viewport.dart';
+import 'dialogs/new_canvas_dialog.dart';
+import '../providers/canvas_controller.dart';
 
 /// Main application shell with collapsible panels
 /// Layout: TopBar | LeftPanel | Canvas | RightPanel | BottomBar
@@ -97,7 +100,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'New Canvas (Cmd+N)',
-            onPressed: () {},
+            onPressed: _showNewCanvasDialog,
           ),
           IconButton(
             icon: const Icon(Icons.folder_open),
@@ -259,61 +262,13 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   /// Canvas area (center)
   Widget _buildCanvasArea() {
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Center(
-        child: Container(
-          width: 400,
-          height: 300,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
-                blurRadius: 10,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.landscape,
-                  size: 64,
-                  color: Colors.grey[400],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Canvas Area',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '(Coming soon)',
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    return const CanvasViewport();
   }
 
   /// Bottom status bar
   Widget _buildBottomBar() {
+    final canvasState = ref.watch(canvasControllerProvider);
+
     return Container(
       height: 32,
       decoration: BoxDecoration(
@@ -341,14 +296,14 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
           const SizedBox(width: 16),
 
-          // Status info
+          // Status info (live from canvas state)
           Text(
-            'Zoom: 100%',
+            'Zoom: ${canvasState.zoomPercentage}',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(width: 24),
           Text(
-            'Canvas: 1000×1000px',
+            'Canvas: ${canvasState.dimensionsString}',
             style: Theme.of(context).textTheme.bodySmall,
           ),
 
@@ -448,5 +403,20 @@ class _AppShellState extends ConsumerState<AppShell> {
         ),
       ],
     );
+  }
+
+  /// Show new canvas dialog
+  Future<void> _showNewCanvasDialog() async {
+    final result = await showNewCanvasDialog(context);
+
+    if (result != null && mounted) {
+      final size = result['size'] as Size;
+      final backgroundColor = result['backgroundColor'] as Color;
+
+      ref.read(canvasControllerProvider.notifier).newCanvas(
+        size: size,
+        backgroundColor: backgroundColor,
+      );
+    }
   }
 }
