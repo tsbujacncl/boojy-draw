@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'canvas_viewport.dart';
 import 'dialogs/new_canvas_dialog.dart';
 import 'panels/layers_panel.dart';
+import 'panels/color_picker_panel.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/brush_controller.dart';
 import '../models/brush_stroke.dart';
@@ -258,19 +259,8 @@ class _AppShellState extends ConsumerState<AppShell> {
             child: Column(
               children: [
                 _buildPanelHeader('Color'),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    child: Center(
-                      child: Text(
-                        'Color picker\n(Coming soon)',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-                  ),
+                const Expanded(
+                  child: ColorPickerPanel(),
                 ),
               ],
             ),
