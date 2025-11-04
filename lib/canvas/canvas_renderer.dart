@@ -1,15 +1,19 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../models/canvas_state.dart';
+import '../providers/drawing_state_controller.dart';
+import '../tools/brush_engine.dart';
 
 /// Custom painter for rendering the canvas
 class CanvasRenderer extends CustomPainter {
   final CanvasState canvasState;
   final Size viewportSize;
+  final DrawingState drawingState;
 
   const CanvasRenderer({
     required this.canvasState,
     required this.viewportSize,
+    required this.drawingState,
   });
 
   @override
@@ -57,7 +61,15 @@ class CanvasRenderer extends CustomPainter {
 
     canvas.drawRect(canvasRect, borderPaint);
 
-    // Future: Draw layers here
+    // Draw committed strokes
+    for (final stroke in drawingState.committedStrokes) {
+      BrushEngine.renderStroke(canvas, stroke);
+    }
+
+    // Draw current stroke being drawn
+    if (drawingState.currentStroke != null) {
+      BrushEngine.renderStroke(canvas, drawingState.currentStroke!);
+    }
 
     // Restore canvas state
     canvas.restore();
@@ -126,7 +138,8 @@ class CanvasRenderer extends CustomPainter {
   @override
   bool shouldRepaint(CanvasRenderer oldDelegate) {
     return oldDelegate.canvasState != canvasState ||
-        oldDelegate.viewportSize != viewportSize;
+        oldDelegate.viewportSize != viewportSize ||
+        oldDelegate.drawingState != drawingState;
   }
 
   @override
@@ -136,10 +149,12 @@ class CanvasRenderer extends CustomPainter {
 /// Helper widget that wraps canvas rendering with proper sizing
 class CanvasRenderWidget extends StatelessWidget {
   final CanvasState canvasState;
+  final DrawingState drawingState;
 
   const CanvasRenderWidget({
     super.key,
     required this.canvasState,
+    required this.drawingState,
   });
 
   @override
@@ -157,6 +172,7 @@ class CanvasRenderWidget extends StatelessWidget {
             painter: CanvasRenderer(
               canvasState: canvasState,
               viewportSize: viewportSize,
+              drawingState: drawingState,
             ),
           ),
         );

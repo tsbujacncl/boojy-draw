@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'canvas_viewport.dart';
 import 'dialogs/new_canvas_dialog.dart';
 import '../providers/canvas_controller.dart';
+import '../providers/brush_controller.dart';
+import '../models/brush_stroke.dart';
 
 /// Main application shell with collapsible panels
 /// Layout: TopBar | LeftPanel | Canvas | RightPanel | BottomBar
@@ -129,6 +131,9 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   /// Left panel with tool options
   Widget _buildLeftPanel() {
+    final brushSettings = ref.watch(brushControllerProvider);
+    final brushController = ref.read(brushControllerProvider.notifier);
+
     return Container(
       width: _leftPanelWidth,
       decoration: BoxDecoration(
@@ -149,7 +154,7 @@ class _AppShellState extends ConsumerState<AppShell> {
             onClose: () => setState(() => _leftPanelVisible = false),
           ),
 
-          // Tool options content (placeholder)
+          // Tool options content
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(16),
@@ -159,21 +164,46 @@ class _AppShellState extends ConsumerState<AppShell> {
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 const SizedBox(height: 16),
-                _buildSlider('Size', 25, 1, 500),
+
+                // Brush size slider
+                _buildBrushSlider(
+                  'Size',
+                  brushSettings.size,
+                  1,
+                  500,
+                  (value) => brushController.setSize(value),
+                ),
                 const SizedBox(height: 16),
-                _buildSlider('Opacity', 100, 0, 100),
+
+                // Opacity slider
+                _buildBrushSlider(
+                  'Opacity',
+                  brushSettings.opacity * 100,
+                  0,
+                  100,
+                  (value) => brushController.setOpacity(value / 100),
+                ),
                 const SizedBox(height: 16),
+
+                // Pressure curve dropdown
                 Text(
                   'Pressure Curve',
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
                 const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  initialValue: 'Linear',
-                  items: ['Linear', 'Ease In', 'Ease Out', 'S-Curve']
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                DropdownButtonFormField<PressureCurve>(
+                  initialValue: brushSettings.pressureCurve,
+                  items: PressureCurve.values
+                      .map((curve) => DropdownMenuItem(
+                            value: curve,
+                            child: Text(curve.displayName),
+                          ))
                       .toList(),
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if (value != null) {
+                      brushController.setPressureCurve(value);
+                    }
+                  },
                 ),
               ],
             ),
@@ -377,8 +407,14 @@ class _AppShellState extends ConsumerState<AppShell> {
     );
   }
 
-  /// Slider widget with label
-  Widget _buildSlider(String label, double value, double min, double max) {
+  /// Brush slider widget with label and callback
+  Widget _buildBrushSlider(
+    String label,
+    double value,
+    double min,
+    double max,
+    ValueChanged<double> onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -399,7 +435,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           value: value,
           min: min,
           max: max,
-          onChanged: (val) {},
+          onChanged: onChanged,
         ),
       ],
     );

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../canvas/canvas_input_handler.dart';
 import '../canvas/canvas_renderer.dart';
 import '../providers/canvas_controller.dart';
+import '../providers/drawing_state_controller.dart';
+import '../tools/brush_tool.dart';
 
 /// Main canvas viewport widget
 class CanvasViewport extends ConsumerWidget {
@@ -11,6 +13,7 @@ class CanvasViewport extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canvasState = ref.watch(canvasControllerProvider);
+    final drawingState = ref.watch(drawingStateProvider);
 
     return Container(
       decoration: const BoxDecoration(
@@ -26,19 +29,24 @@ class CanvasViewport extends ConsumerWidget {
 
           return CanvasInputHandler(
             viewportSize: viewportSize,
-            child: ClipRect(
-              child: Stack(
-                children: [
-                  // Canvas renderer
-                  CanvasRenderWidget(canvasState: canvasState),
+            child: BrushTool(
+              child: ClipRect(
+                child: Stack(
+                  children: [
+                    // Canvas renderer with drawing state
+                    CanvasRenderWidget(
+                      canvasState: canvasState,
+                      drawingState: drawingState,
+                    ),
 
-                  // Zoom controls overlay (bottom-right)
-                  Positioned(
-                    right: 16,
-                    bottom: 16,
-                    child: _ZoomControls(),
-                  ),
-                ],
+                    // Zoom controls overlay (bottom-right)
+                    Positioned(
+                      right: 16,
+                      bottom: 16,
+                      child: _ZoomControls(),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
