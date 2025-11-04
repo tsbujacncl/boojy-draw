@@ -235,9 +235,11 @@
 - [x] Optimize memory (store before/after images)
 - [x] Update status bar with undo/redo availability
 - [x] Add undo/redo buttons to toolbar
-- [ ] Integrate history with brush tool - Deferred to integration phase
-- [ ] Integrate history with layer operations - Deferred to integration phase
-- [ ] Test undo/redo functionality - Deferred to testing phase
+- [x] Integrate history with brush tool (brush_tool.dart:160-207)
+- [x] Integrate history with layer operations (layers_panel.dart:40-107)
+- [x] Bake brush strokes to layer images (critical fix)
+- [ ] Integrate history with transform tool - Deferred (requires image transform implementation)
+- [ ] Test undo/redo functionality - Ready for testing
 
 ### Step 18: Final Polish & Testing
 - [ ] Create keyboard shortcuts documentation
