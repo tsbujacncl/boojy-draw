@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/layer_stack_controller.dart';
 import '../../providers/drawing_state_controller.dart';
 import '../../providers/canvas_controller.dart';
+import '../../providers/history_controller.dart';
 import '../../models/layer.dart';
+import '../../commands/layer_commands.dart';
 import '../../tools/layer_compositor.dart';
 
 /// Layers panel widget for managing layers
@@ -39,7 +41,12 @@ class LayersPanel extends ConsumerWidget {
                     // Adjust indices for reverse order
                     final actualOldIndex = layerStack.layers.length - 1 - oldIndex;
                     final actualNewIndex = layerStack.layers.length - 1 - newIndex;
-                    layerController.reorderLayers(actualOldIndex, actualNewIndex);
+                    final command = ReorderLayersCommand(
+                      ref: ref,
+                      oldIndex: actualOldIndex,
+                      newIndex: actualNewIndex,
+                    );
+                    ref.read(historyControllerProvider.notifier).execute(command);
                   },
                   itemBuilder: (context, index) {
                     // Reverse index for display
@@ -52,12 +59,52 @@ class LayersPanel extends ConsumerWidget {
                       layer: layer,
                       isActive: isActive,
                       onTap: () => layerController.setActiveLayer(layer.id),
-                      onVisibilityToggle: () => layerController.toggleVisibility(layer.id),
-                      onLockToggle: () => layerController.toggleLock(layer.id),
-                      onOpacityChanged: (opacity) => layerController.setOpacity(layer.id, opacity),
-                      onRename: (name) => layerController.setName(layer.id, name),
-                      onDelete: () => layerController.deleteLayer(layer.id),
-                      onDuplicate: () => layerController.duplicateLayer(layer.id),
+                      onVisibilityToggle: () {
+                        final command = ToggleLayerVisibilityCommand(
+                          ref: ref,
+                          layerId: layer.id,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
+                      onLockToggle: () {
+                        final command = ToggleLayerLockCommand(
+                          ref: ref,
+                          layerId: layer.id,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
+                      onOpacityChanged: (opacity) {
+                        final command = SetLayerOpacityCommand(
+                          ref: ref,
+                          layerId: layer.id,
+                          newOpacity: opacity,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
+                      onRename: (name) {
+                        final command = RenameLayerCommand(
+                          ref: ref,
+                          layerId: layer.id,
+                          newName: name,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
+                      onDelete: () {
+                        final layerIndex = layerStack.layers.indexOf(layer);
+                        final command = DeleteLayerCommand(
+                          ref: ref,
+                          layer: layer,
+                          index: layerIndex,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
+                      onDuplicate: () {
+                        final command = DuplicateLayerCommand(
+                          ref: ref,
+                          sourceLayerId: layer.id,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      },
                     );
                   },
                 ),
@@ -79,20 +126,46 @@ class LayersPanel extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.add, size: 20),
                 tooltip: 'New Layer',
-                onPressed: () => layerController.addLayer(),
+                onPressed: () {
+                  final newLayer = Layer.empty(
+                    name: 'Layer ${layerStack.layers.length + 1}',
+                    index: layerStack.layers.length + 1,
+                  );
+                  final command = AddLayerCommand(
+                    ref: ref,
+                    layer: newLayer,
+                    index: layerStack.layers.length,
+                  );
+                  ref.read(historyControllerProvider.notifier).execute(command);
+                },
               ),
               IconButton(
                 icon: const Icon(Icons.delete, size: 20),
                 tooltip: 'Delete Layer',
                 onPressed: layerStack.activeLayer != null
-                    ? () => layerController.deleteLayer(layerStack.activeLayerId!)
+                    ? () {
+                        final activeLayer = layerStack.activeLayer!;
+                        final activeIndex = layerStack.layers.indexOf(activeLayer);
+                        final command = DeleteLayerCommand(
+                          ref: ref,
+                          layer: activeLayer,
+                          index: activeIndex,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      }
                     : null,
               ),
               IconButton(
                 icon: const Icon(Icons.copy, size: 20),
                 tooltip: 'Duplicate Layer',
                 onPressed: layerStack.activeLayer != null
-                    ? () => layerController.duplicateLayer(layerStack.activeLayerId!)
+                    ? () {
+                        final command = DuplicateLayerCommand(
+                          ref: ref,
+                          sourceLayerId: layerStack.activeLayerId!,
+                        );
+                        ref.read(historyControllerProvider.notifier).execute(command);
+                      }
                     : null,
               ),
             ],

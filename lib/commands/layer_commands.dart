@@ -5,7 +5,7 @@ import '../providers/layer_stack_controller.dart';
 
 /// Command for adding a new layer
 class AddLayerCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final Layer layer;
   final int index;
 
@@ -33,7 +33,7 @@ class AddLayerCommand extends Command {
 
 /// Command for deleting a layer
 class DeleteLayerCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final Layer layer;
   final int index;
 
@@ -61,7 +61,7 @@ class DeleteLayerCommand extends Command {
 
 /// Command for duplicating a layer
 class DuplicateLayerCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String sourceLayerId;
   String? _duplicatedLayerId;
   int? _insertIndex;
@@ -103,7 +103,7 @@ class DuplicateLayerCommand extends Command {
 
 /// Command for reordering layers
 class ReorderLayersCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final int oldIndex;
   final int newIndex;
 
@@ -132,7 +132,7 @@ class ReorderLayersCommand extends Command {
 
 /// Command for toggling layer visibility
 class ToggleLayerVisibilityCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
 
   ToggleLayerVisibilityCommand({
@@ -159,7 +159,7 @@ class ToggleLayerVisibilityCommand extends Command {
 
 /// Command for toggling layer lock
 class ToggleLayerLockCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
 
   ToggleLayerLockCommand({
@@ -186,7 +186,7 @@ class ToggleLayerLockCommand extends Command {
 
 /// Command for changing layer opacity
 class SetLayerOpacityCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final double newOpacity;
   double? _oldOpacity;
@@ -221,7 +221,7 @@ class SetLayerOpacityCommand extends Command {
 
 /// Command for renaming a layer
 class RenameLayerCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final String newName;
   String? _oldName;

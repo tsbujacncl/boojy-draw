@@ -7,7 +7,10 @@ import '../providers/brush_controller.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/drawing_state_controller.dart';
 import '../providers/layer_stack_controller.dart';
+import '../providers/history_controller.dart';
+import '../commands/brush_stroke_command.dart';
 import 'stroke_stabilizer.dart';
+import 'layer_compositor.dart';
 
 /// Brush tool for drawing on canvas
 class BrushTool extends ConsumerStatefulWidget {
@@ -154,8 +157,51 @@ class _BrushToolState extends ConsumerState<BrushTool> {
     _cleanup();
   }
 
-  void _endStroke() {
+  Future<void> _endStroke() async {
+    final drawingState = ref.read(drawingStateProvider);
+    final currentStroke = drawingState.currentStroke;
+    final currentLayerId = drawingState.currentLayerId;
+
+    if (currentStroke == null || currentLayerId == null || currentStroke.points.isEmpty) {
+      _cleanup();
+      return;
+    }
+
+    // End stroke in drawing state
     ref.read(drawingStateProvider.notifier).endStroke();
+
+    // Get the active layer and capture before image
+    final layerStack = ref.read(layerStackProvider);
+    final activeLayer = layerStack.layers.firstWhere(
+      (layer) => layer.id == currentLayerId,
+      orElse: () => throw Exception('Active layer not found'),
+    );
+
+    // Create command
+    final command = BrushStrokeCommand(
+      ref: ref,
+      layerId: currentLayerId,
+      stroke: currentStroke,
+    );
+
+    // Execute command through history (this will capture before state)
+    await ref.read(historyControllerProvider.notifier).execute(command);
+
+    // Bake the stroke into the layer image
+    final canvasState = ref.read(canvasControllerProvider);
+    final updatedImage = await LayerCompositor.renderLayerToImage(
+      layer: activeLayer,
+      size: canvasState.canvasSize,
+      strokes: [currentStroke],
+    );
+
+    // Set after image and update layer
+    command.setAfterImage(updatedImage);
+    ref.read(layerStackProvider.notifier).setLayerImage(currentLayerId, updatedImage);
+
+    // Clear the stroke from drawing state
+    ref.read(drawingStateProvider.notifier).clearLayer(currentLayerId);
+
     _cleanup();
   }
 

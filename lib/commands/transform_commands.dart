@@ -6,7 +6,7 @@ import '../providers/layer_stack_controller.dart';
 
 /// Command for applying a transform (move, scale, rotate)
 class ApplyTransformCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final Matrix4 transform;
   ui.Image? _beforeImage;
@@ -53,7 +53,7 @@ class ApplyTransformCommand extends Command {
 
 /// Command for flipping a layer
 class FlipLayerCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final bool horizontal;
   ui.Image? _beforeImage;

@@ -6,7 +6,7 @@ import '../providers/selection_controller.dart';
 
 /// Command for creating/modifying a selection
 class SelectionCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final Selection? newSelection;
   Selection? _oldSelection;
 
@@ -44,7 +44,7 @@ class SelectionCommand extends Command {
 
 /// Command for cutting selection
 class CutSelectionCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final Selection selection;
   ui.Image? _beforeImage;
@@ -74,7 +74,7 @@ class CutSelectionCommand extends Command {
 
 /// Command for pasting selection
 class PasteSelectionCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final ui.Image pastedImage;
   final ui.Offset position;

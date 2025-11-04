@@ -7,7 +7,7 @@ import '../providers/layer_stack_controller.dart';
 
 /// Command for drawing a brush stroke
 class BrushStrokeCommand extends Command {
-  final Ref ref;
+  final WidgetRef ref;
   final String layerId;
   final BrushStroke stroke;
 
