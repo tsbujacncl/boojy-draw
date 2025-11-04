@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'canvas_viewport.dart';
 import 'dialogs/new_canvas_dialog.dart';
+import 'dialogs/file_dialogs.dart';
 import 'panels/layers_panel.dart';
 import 'panels/color_picker_panel.dart';
 import 'widgets/tool_selector.dart';
@@ -9,6 +10,9 @@ import '../providers/canvas_controller.dart';
 import '../providers/brush_controller.dart';
 import '../providers/tool_controller.dart';
 import '../providers/selection_controller.dart';
+import '../providers/document_controller.dart';
+import '../providers/layer_stack_controller.dart';
+import '../services/file_io_service.dart';
 import '../models/brush_stroke.dart';
 import '../models/tool_type.dart';
 
@@ -113,17 +117,62 @@ class _AppShellState extends ConsumerState<AppShell> {
           IconButton(
             icon: const Icon(Icons.add),
             tooltip: 'New Canvas (Cmd+N)',
-            onPressed: _showNewCanvasDialog,
+            onPressed: _handleNew,
           ),
           IconButton(
             icon: const Icon(Icons.folder_open),
             tooltip: 'Open (Cmd+O)',
-            onPressed: () {},
+            onPressed: _handleOpen,
           ),
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Save (Cmd+S)',
-            onPressed: () {},
+            onPressed: _handleSave,
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'More',
+            onSelected: (value) {
+              switch (value) {
+                case 'save_as':
+                  _handleSaveAs();
+                  break;
+                case 'export_png':
+                  _handleExportPNG();
+                  break;
+                case 'export_jpg':
+                  _handleExportJPG();
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'save_as',
+                child: ListTile(
+                  leading: Icon(Icons.save_as),
+                  title: Text('Save As...'),
+                  subtitle: Text('Cmd+Shift+S'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'export_png',
+                child: ListTile(
+                  leading: Icon(Icons.image),
+                  title: Text('Export PNG...'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'export_jpg',
+                child: ListTile(
+                  leading: Icon(Icons.image),
+                  title: Text('Export JPG...'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
           const SizedBox(width: 8),
         ],
@@ -494,5 +543,110 @@ class _AppShellState extends ConsumerState<AppShell> {
         backgroundColor: backgroundColor,
       );
     }
+  }
+
+  // File operation handlers
+  Future<void> _handleSave() async {
+    final controller = ref.read(documentControllerProvider.notifier);
+    final success = await controller.save();
+    if (!success && mounted) {
+      await _handleSaveAs();
+    }
+  }
+
+  Future<void> _handleSaveAs() async {
+    if (!mounted) return;
+
+    final filePath = await showSaveDialog(context);
+    if (!mounted || filePath == null) return;
+
+    final controller = ref.read(documentControllerProvider.notifier);
+    await controller.saveAs(filePath);
+  }
+
+  Future<void> _handleOpen() async {
+    if (!mounted) return;
+
+    // Check for unsaved changes
+    final documentState = ref.read(documentControllerProvider);
+    if (documentState.isModified) {
+      final shouldSave = await showUnsavedChangesDialog(context);
+      if (!mounted || shouldSave == null) return;
+
+      if (shouldSave) {
+        await _handleSave();
+      }
+    }
+
+    if (!mounted) return;
+    final filePath = await showOpenDialog(context);
+    if (!mounted || filePath == null) return;
+
+    final controller = ref.read(documentControllerProvider.notifier);
+    await controller.load(filePath);
+  }
+
+  Future<void> _handleNew() async {
+    if (!mounted) return;
+
+    // Check for unsaved changes
+    final documentState = ref.read(documentControllerProvider);
+    if (documentState.isModified) {
+      final shouldSave = await showUnsavedChangesDialog(context);
+      if (!mounted || shouldSave == null) return;
+
+      if (shouldSave) {
+        await _handleSave();
+      }
+    }
+
+    if (!mounted) return;
+    await _showNewCanvasDialog();
+  }
+
+  Future<void> _handleExportPNG() async {
+    if (!mounted) return;
+
+    final options = await showExportDialog(context);
+    if (!mounted || options == null) return;
+
+    if (options['format'] != 'png') return;
+
+    final filePath = await showExportPNGDialog(context);
+    if (!mounted || filePath == null) return;
+
+    final canvasState = ref.read(canvasControllerProvider);
+    final layerStackState = ref.read(layerStackProvider);
+
+    await FileIOService.exportPNG(
+      filePath: filePath,
+      layerStackState: layerStackState,
+      canvasSize: canvasState.canvasSize,
+      backgroundColor: canvasState.backgroundColor,
+      includeTransparency: options['includeTransparency'] as bool,
+    );
+  }
+
+  Future<void> _handleExportJPG() async {
+    if (!mounted) return;
+
+    final options = await showExportDialog(context);
+    if (!mounted || options == null) return;
+
+    if (options['format'] != 'jpg') return;
+
+    final filePath = await showExportJPGDialog(context);
+    if (!mounted || filePath == null) return;
+
+    final canvasState = ref.read(canvasControllerProvider);
+    final layerStackState = ref.read(layerStackProvider);
+
+    await FileIOService.exportJPG(
+      filePath: filePath,
+      layerStackState: layerStackState,
+      canvasSize: canvasState.canvasSize,
+      backgroundColor: canvasState.backgroundColor,
+      quality: options['quality'] as int,
+    );
   }
 }

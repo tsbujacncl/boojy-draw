@@ -182,9 +182,9 @@
 
 ---
 
-## Phase 7: File I/O & Persistence (Days 15-16) 🚧 IN PROGRESS
+## Phase 7: File I/O & Persistence (Days 15-16) ✅ COMPLETE
 
-### Step 15: Save/Load (Core Complete, UI Pending)
+### Step 15: Save/Load ✅
 - [x] Design `.draw` file format (JSON schema + ZIP structure)
 - [x] Create `DrawFile` model (metadata, layers, canvas info)
 - [x] Create `FileIOService` for save/load/export operations
@@ -192,29 +192,31 @@
 - [x] Generate 512x512 thumbnail for metadata
 - [x] Add file format versioning (v0.1)
 - [x] Handle forward compatibility (fromJson ignores unknown fields)
-- [ ] Implement Save Project (Cmd+S) - UI pending
-- [ ] Implement Save As (Cmd+Shift+S) - UI pending
-- [ ] Implement Open Project (Cmd+O) - UI pending
-- [ ] Implement New Project (Cmd+N with save prompt) - UI pending
-- [ ] Add file picker dialogs
-- [ ] Test save/load round-trip (verify all data preserved)
+- [x] Implement Save Project (Cmd+S)
+- [x] Implement Save As (Cmd+Shift+S)
+- [x] Implement Open Project (Cmd+O)
+- [x] Implement New Project (Cmd+N with save prompt)
+- [x] Add file picker dialogs (save, open, export)
+- [ ] Test save/load round-trip - Deferred to testing phase
 
-### Step 16: Autosave & Export (Core Complete, UI Pending)
+### Step 16: Autosave & Export ✅
 - [x] Create `DocumentController` for document state management
 - [x] Implement autosave timer (every 2 minutes)
 - [x] Save autosaves to `~/Documents/Boojy/Autosaves/`
 - [x] Implement autosave retention (keep last 3, delete older)
 - [x] Add autosave recovery on launch (findAutosaves method)
 - [x] Implement PNG export (with transparency option)
-- [x] Implement JPG export (flatten layers, quality slider)
-- [ ] Show "Autosaving..." indicator (bottom-right, 1s fade)
-- [ ] Create Export dialog (PNG/JPG format selector)
-- [ ] Add export size options (100%, 50%, 200%, custom)
-- [ ] Wire up keyboard shortcuts (Cmd+S, Cmd+Shift+S, Cmd+O, Cmd+N)
-- [ ] Use isolate for export encoding (deferred to optimization)
-- [ ] Test export performance (5000x5000 in <5s target)
+- [x] Implement JPG export (flatten layers, quality slider 1-100)
+- [x] Create Export dialog (PNG/JPG format selector, quality slider)
+- [x] Wire up keyboard shortcuts (Cmd+S, Cmd+Shift+S, Cmd+O, Cmd+N)
+- [x] Wire up toolbar buttons (New, Open, Save, Export menu)
+- [x] Add unsaved changes prompt on New/Open
+- [ ] Show "Autosaving..." indicator - Deferred to polish phase
+- [ ] Add export size options (100%, 50%, 200%, custom) - Deferred to v1.0
+- [ ] Use isolate for export encoding - Deferred to optimization
+- [ ] Test export performance (5000x5000 in <5s target) - Deferred to testing
 
-**Progress**: Core file I/O system complete with .draw format (JSON+ZIP), save/load/export functionality, autosave system, and document state management. Remaining: UI integration (dialogs, keyboard shortcuts, status indicators).
+**Phase 7 Complete**: Full file I/O system with .draw format (ZIP+JSON), save/load/export operations, keyboard shortcuts (Cmd+S/O/N/Shift+S), file picker dialogs, export dialog with PNG/JPG options, autosave system (2 min intervals, keeps last 3), unsaved changes prompts, and toolbar integration.
 
 ---
 

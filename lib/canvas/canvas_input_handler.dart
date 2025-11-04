@@ -1,11 +1,13 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/tool_controller.dart';
 import '../providers/selection_controller.dart';
+import '../providers/document_controller.dart';
 import '../models/tool_type.dart';
+import '../ui/dialogs/file_dialogs.dart';
 
 /// Handles input events for canvas (zoom, pan, etc.)
 class CanvasInputHandler extends ConsumerStatefulWidget {
@@ -120,6 +122,34 @@ class _CanvasInputHandlerState extends ConsumerState<CanvasInputHandler> {
       // Cmd/Ctrl + 1 (zoom to 100%)
       if (isModifier && event.logicalKey == LogicalKeyboardKey.digit1) {
         controller.zoomToActualSize();
+        return KeyEventResult.handled;
+      }
+
+      // File operations
+      final documentController = ref.read(documentControllerProvider.notifier);
+      final isShift = HardwareKeyboard.instance.isShiftPressed;
+
+      // Cmd/Ctrl + S (Save)
+      if (isModifier && !isShift && event.logicalKey == LogicalKeyboardKey.keyS) {
+        _handleSave(documentController);
+        return KeyEventResult.handled;
+      }
+
+      // Cmd/Ctrl + Shift + S (Save As)
+      if (isModifier && isShift && event.logicalKey == LogicalKeyboardKey.keyS) {
+        _handleSaveAs();
+        return KeyEventResult.handled;
+      }
+
+      // Cmd/Ctrl + O (Open)
+      if (isModifier && event.logicalKey == LogicalKeyboardKey.keyO) {
+        _handleOpen();
+        return KeyEventResult.handled;
+      }
+
+      // Cmd/Ctrl + N (New)
+      if (isModifier && event.logicalKey == LogicalKeyboardKey.keyN) {
+        _handleNew();
         return KeyEventResult.handled;
       }
 
@@ -247,5 +277,84 @@ class _CanvasInputHandlerState extends ConsumerState<CanvasInputHandler> {
       return SystemMouseCursors.grab;
     }
     return SystemMouseCursors.basic;
+  }
+
+  // File operation handlers
+  Future<void> _handleSave(DocumentController controller) async {
+    final success = await controller.save();
+    if (!success && mounted) {
+      // No path, need Save As dialog
+      await _handleSaveAs();
+    }
+  }
+
+  Future<void> _handleSaveAs() async {
+    if (!mounted) return;
+
+    final filePath = await showSaveDialog(context);
+    if (filePath != null) {
+      final controller = ref.read(documentControllerProvider.notifier);
+      await controller.saveAs(filePath);
+    }
+  }
+
+  Future<void> _handleOpen() async {
+    if (!mounted) return;
+
+    // Check for unsaved changes
+    final documentState = ref.read(documentControllerProvider);
+    if (documentState.isModified) {
+      final shouldSave = await showUnsavedChangesDialog(context);
+      if (!mounted || shouldSave == null) return; // Canceled
+
+      if (shouldSave) {
+        // Save before opening
+        final controller = ref.read(documentControllerProvider.notifier);
+        final saved = await controller.save();
+        if (!mounted) return;
+        if (!saved) {
+          // Need Save As
+          final filePath = await showSaveDialog(context);
+          if (!mounted || filePath == null) return; // Canceled save
+          await controller.saveAs(filePath);
+        }
+      }
+    }
+
+    if (!mounted) return;
+    // Show open dialog
+    final filePath = await showOpenDialog(context);
+    if (!mounted || filePath == null) return;
+
+    final controller = ref.read(documentControllerProvider.notifier);
+    await controller.load(filePath);
+  }
+
+  Future<void> _handleNew() async {
+    if (!mounted) return;
+
+    // Check for unsaved changes
+    final documentState = ref.read(documentControllerProvider);
+    if (documentState.isModified) {
+      final shouldSave = await showUnsavedChangesDialog(context);
+      if (!mounted || shouldSave == null) return; // Canceled
+
+      if (shouldSave) {
+        // Save before creating new
+        final controller = ref.read(documentControllerProvider.notifier);
+        final saved = await controller.save();
+        if (!mounted) return;
+        if (!saved) {
+          // Need Save As
+          final filePath = await showSaveDialog(context);
+          if (!mounted || filePath == null) return; // Canceled save
+          await controller.saveAs(filePath);
+        }
+      }
+    }
+
+    // Create new document
+    final controller = ref.read(documentControllerProvider.notifier);
+    await controller.newDocument();
   }
 }
