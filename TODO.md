@@ -241,26 +241,26 @@
 - [ ] Integrate history with transform tool - Deferred (requires image transform implementation)
 - [ ] Test undo/redo functionality - Ready for testing
 
-### Step 18: Final Polish & Testing
-- [ ] Create keyboard shortcuts documentation
-- [ ] Add tooltips to all toolbar buttons
-- [ ] Test performance with 3000x3000, 10 layers (≥30 FPS target)
-- [ ] Test performance with 5000x5000 canvas
-- [ ] Stress test with 50+ layers
-- [ ] Test on macOS (Intel + Apple Silicon)
-- [ ] Test on Windows 11
-- [ ] Test with Wacom tablet
-- [ ] Test with Surface Pen
-- [ ] Test with Apple Pencil via Sidecar
-- [ ] Test with mouse (stabilization)
-- [ ] Fix stylus lag/jitter issues
-- [ ] Implement crash recovery
-- [ ] Add error handling for file I/O failures
-- [ ] Run through all tester scenarios from SPRINT-MVP.md
-- [ ] Fix all critical bugs
-- [ ] Build release packages (macOS + Windows)
-- [ ] Update README with build instructions
-- [ ] Create CONTRIBUTING.md
+### Step 18: Final Polish & Testing 🚧 IN PROGRESS
+- [x] Create keyboard shortcuts documentation (docs/KEYBOARD_SHORTCUTS.md)
+- [x] Add tooltips to all toolbar buttons (all present)
+- [ ] Test performance with 3000x3000, 10 layers (≥30 FPS target) - Requires hardware testing
+- [ ] Test performance with 5000x5000 canvas - Requires hardware testing
+- [ ] Stress test with 50+ layers - Requires hardware testing
+- [ ] Test on macOS (Intel + Apple Silicon) - Requires hardware testing
+- [ ] Test on Windows 11 - Requires hardware testing
+- [ ] Test with Wacom tablet - Requires hardware testing
+- [ ] Test with Surface Pen - Requires hardware testing
+- [ ] Test with Apple Pencil via Sidecar - Requires hardware testing
+- [ ] Test with mouse (stabilization) - Requires user testing
+- [ ] Fix stylus lag/jitter issues - Requires hardware testing
+- [ ] Implement crash recovery - Deferred to v1.0
+- [x] Add error handling for file I/O failures (snackbar notifications)
+- [ ] Run through all tester scenarios from SPRINT-MVP.md - Requires user testing
+- [ ] Fix all critical bugs - Ongoing
+- [ ] Build release packages (macOS + Windows) - Ready to build
+- [x] Update README with build instructions (already present)
+- [ ] Create CONTRIBUTING.md - Deferred to post-MVP
 
 ---
 

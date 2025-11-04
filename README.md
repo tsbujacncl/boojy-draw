@@ -14,7 +14,7 @@
 
 Boojy Draw is an expressive digital painting and illustration app built with Flutter. It combines natural-feeling brushes with a simple, learnable interface—powerful enough for finished artwork, approachable enough for beginners.
 
-**Current Phase:** Early Preview (Weeks 3-4 of 12-week sprint)
+**Current Phase:** MVP Complete - Phase 8: Undo/Redo & Polish (Week 4 of 12-week sprint)
 
 ### What's This Preview?
 
@@ -63,7 +63,9 @@ A **2-week MVP** focused on proving core painting workflows:
 
 ### History
 - Undo/redo (Cmd+Z / Cmd+Shift+Z)
-- Compact history panel
+- Up to 50 undoable actions
+- History panel with action descriptions
+- See [KEYBOARD_SHORTCUTS.md](./docs/KEYBOARD_SHORTCUTS.md) for all shortcuts
 
 ### Project Management
 - Save/load `*.draw` files (JSON + PNG layers)

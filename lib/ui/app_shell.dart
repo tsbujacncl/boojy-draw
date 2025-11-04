@@ -618,6 +618,8 @@ class _AppShellState extends ConsumerState<AppShell> {
     final success = await controller.save();
     if (!success && mounted) {
       await _handleSaveAs();
+    } else if (success && mounted) {
+      _showSnackbar('Project saved successfully');
     }
   }
 
@@ -628,7 +630,14 @@ class _AppShellState extends ConsumerState<AppShell> {
     if (!mounted || filePath == null) return;
 
     final controller = ref.read(documentControllerProvider.notifier);
-    await controller.saveAs(filePath);
+    final success = await controller.saveAs(filePath);
+
+    if (!mounted) return;
+    if (success) {
+      _showSnackbar('Project saved successfully');
+    } else {
+      _showSnackbar('Failed to save project', isError: true);
+    }
   }
 
   Future<void> _handleOpen() async {
@@ -650,7 +659,14 @@ class _AppShellState extends ConsumerState<AppShell> {
     if (!mounted || filePath == null) return;
 
     final controller = ref.read(documentControllerProvider.notifier);
-    await controller.load(filePath);
+    final success = await controller.load(filePath);
+
+    if (!mounted) return;
+    if (success) {
+      _showSnackbar('Project loaded successfully');
+    } else {
+      _showSnackbar('Failed to load project', isError: true);
+    }
   }
 
   Future<void> _handleNew() async {
@@ -685,13 +701,20 @@ class _AppShellState extends ConsumerState<AppShell> {
     final canvasState = ref.read(canvasControllerProvider);
     final layerStackState = ref.read(layerStackProvider);
 
-    await FileIOService.exportPNG(
+    final success = await FileIOService.exportPNG(
       filePath: filePath,
       layerStackState: layerStackState,
       canvasSize: canvasState.canvasSize,
       backgroundColor: canvasState.backgroundColor,
       includeTransparency: options['includeTransparency'] as bool,
     );
+
+    if (!mounted) return;
+    if (success) {
+      _showSnackbar('PNG exported successfully');
+    } else {
+      _showSnackbar('Failed to export PNG', isError: true);
+    }
   }
 
   Future<void> _handleExportJPG() async {
@@ -708,12 +731,42 @@ class _AppShellState extends ConsumerState<AppShell> {
     final canvasState = ref.read(canvasControllerProvider);
     final layerStackState = ref.read(layerStackProvider);
 
-    await FileIOService.exportJPG(
+    final success = await FileIOService.exportJPG(
       filePath: filePath,
       layerStackState: layerStackState,
       canvasSize: canvasState.canvasSize,
       backgroundColor: canvasState.backgroundColor,
       quality: options['quality'] as int,
+    );
+
+    if (!mounted) return;
+    if (success) {
+      _showSnackbar('JPG exported successfully');
+    } else {
+      _showSnackbar('Failed to export JPG', isError: true);
+    }
+  }
+
+  /// Show a snackbar message
+  void _showSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError
+            ? Theme.of(context).colorScheme.error
+            : Theme.of(context).colorScheme.primaryContainer,
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: isError ? 4 : 2),
+        action: SnackBarAction(
+          label: 'Dismiss',
+          textColor: isError
+              ? Theme.of(context).colorScheme.onError
+              : Theme.of(context).colorScheme.onPrimaryContainer,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
     );
   }
 }
