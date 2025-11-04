@@ -4,6 +4,7 @@ import 'canvas_viewport.dart';
 import 'dialogs/new_canvas_dialog.dart';
 import 'panels/layers_panel.dart';
 import 'panels/color_picker_panel.dart';
+import 'widgets/tool_selector.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/brush_controller.dart';
 import '../models/brush_stroke.dart';
@@ -97,6 +98,11 @@ class _AppShellState extends ConsumerState<AppShell> {
           _buildMenuButton('Layer'),
           _buildMenuButton('Select'),
           _buildMenuButton('Help'),
+
+          const SizedBox(width: 24),
+
+          // Tool selector
+          const ToolSelector(),
 
           const Spacer(),
 

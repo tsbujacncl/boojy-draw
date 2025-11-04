@@ -5,7 +5,12 @@ import '../canvas/canvas_renderer.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/drawing_state_controller.dart';
 import '../providers/layer_stack_controller.dart';
+import '../providers/tool_controller.dart';
+import '../models/tool_type.dart';
 import '../tools/brush_tool.dart';
+import '../tools/selection/rectangle_selection_tool.dart';
+import '../tools/selection/lasso_selection_tool.dart';
+import '../tools/selection/magic_wand_tool.dart';
 
 /// Main canvas viewport widget
 class CanvasViewport extends ConsumerWidget {
@@ -16,6 +21,7 @@ class CanvasViewport extends ConsumerWidget {
     final canvasState = ref.watch(canvasControllerProvider);
     final drawingState = ref.watch(drawingStateProvider);
     final layerStackState = ref.watch(layerStackProvider);
+    final toolState = ref.watch(toolControllerProvider);
 
     return Container(
       decoration: const BoxDecoration(
@@ -29,33 +35,59 @@ class CanvasViewport extends ConsumerWidget {
             constraints.maxHeight,
           );
 
+          final canvasContent = ClipRect(
+            child: Stack(
+              children: [
+                // Canvas renderer with drawing state and layers
+                CanvasRenderWidget(
+                  canvasState: canvasState,
+                  drawingState: drawingState,
+                  layerStackState: layerStackState,
+                ),
+
+                // Zoom controls overlay (bottom-right)
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: _ZoomControls(),
+                ),
+              ],
+            ),
+          );
+
+          // Wrap with appropriate tool based on active tool
+          final toolWrappedContent = _buildToolWrapper(
+            toolState.activeTool,
+            canvasContent,
+          );
+
           return CanvasInputHandler(
             viewportSize: viewportSize,
-            child: BrushTool(
-              child: ClipRect(
-                child: Stack(
-                  children: [
-                    // Canvas renderer with drawing state and layers
-                    CanvasRenderWidget(
-                      canvasState: canvasState,
-                      drawingState: drawingState,
-                      layerStackState: layerStackState,
-                    ),
-
-                    // Zoom controls overlay (bottom-right)
-                    Positioned(
-                      right: 16,
-                      bottom: 16,
-                      child: _ZoomControls(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: toolWrappedContent,
           );
         },
       ),
     );
+  }
+
+  /// Build the appropriate tool wrapper based on active tool
+  Widget _buildToolWrapper(ToolType toolType, Widget child) {
+    switch (toolType) {
+      case ToolType.brush:
+        return BrushTool(child: child);
+      case ToolType.rectangleSelection:
+        return RectangleSelectionTool(child: child);
+      case ToolType.lassoSelection:
+        return LassoSelectionTool(child: child);
+      case ToolType.magicWand:
+        return MagicWandTool(child: child);
+      case ToolType.transform:
+        // TODO: Implement transform tool
+        return child;
+      case ToolType.eyedropper:
+        // TODO: Implement eyedropper tool
+        return child;
+    }
   }
 }
 

@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/canvas_controller.dart';
+import '../providers/tool_controller.dart';
+import '../providers/selection_controller.dart';
+import '../models/tool_type.dart';
 
 /// Handles input events for canvas (zoom, pan, etc.)
 class CanvasInputHandler extends ConsumerStatefulWidget {
@@ -118,6 +121,63 @@ class _CanvasInputHandlerState extends ConsumerState<CanvasInputHandler> {
       if (isModifier && event.logicalKey == LogicalKeyboardKey.digit1) {
         controller.zoomToActualSize();
         return KeyEventResult.handled;
+      }
+
+      // Selection commands
+      final selectionController = ref.read(selectionControllerProvider.notifier);
+      final canvasState = ref.read(canvasControllerProvider);
+
+      // Cmd/Ctrl + A (Select All)
+      if (isModifier && event.logicalKey == LogicalKeyboardKey.keyA) {
+        selectionController.selectAll(canvasState.canvasSize);
+        return KeyEventResult.handled;
+      }
+
+      // Cmd/Ctrl + D (Deselect)
+      if (isModifier && event.logicalKey == LogicalKeyboardKey.keyD) {
+        selectionController.clearSelection();
+        return KeyEventResult.handled;
+      }
+
+      // Tool switching shortcuts (only if no modifier keys)
+      if (!isModifier) {
+        final toolController = ref.read(toolControllerProvider.notifier);
+
+        // B key - Brush tool
+        if (event.logicalKey == LogicalKeyboardKey.keyB) {
+          toolController.setTool(ToolType.brush);
+          return KeyEventResult.handled;
+        }
+
+        // M key - Rectangle Selection tool
+        if (event.logicalKey == LogicalKeyboardKey.keyM) {
+          toolController.setTool(ToolType.rectangleSelection);
+          return KeyEventResult.handled;
+        }
+
+        // L key - Lasso Selection tool
+        if (event.logicalKey == LogicalKeyboardKey.keyL) {
+          toolController.setTool(ToolType.lassoSelection);
+          return KeyEventResult.handled;
+        }
+
+        // W key - Magic Wand tool
+        if (event.logicalKey == LogicalKeyboardKey.keyW) {
+          toolController.setTool(ToolType.magicWand);
+          return KeyEventResult.handled;
+        }
+
+        // V key - Transform tool
+        if (event.logicalKey == LogicalKeyboardKey.keyV) {
+          toolController.setTool(ToolType.transform);
+          return KeyEventResult.handled;
+        }
+
+        // I key - Eyedropper tool
+        if (event.logicalKey == LogicalKeyboardKey.keyI) {
+          toolController.setTool(ToolType.eyedropper);
+          return KeyEventResult.handled;
+        }
       }
     }
 

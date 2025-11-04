@@ -149,20 +149,22 @@
 
 ## Phase 6: Selection & Transform (Days 13-14) 🚧 IN PROGRESS
 
-### Step 13: Selection Tools (Core Complete, Integration Pending)
+### Step 13: Selection Tools
 - [x] Create `Selection` model (path, feather, mode)
 - [x] Create `SelectionController` (Riverpod StateNotifier)
 - [x] Implement Rectangle selection tool with modifiers
 - [x] Implement Lasso selection tool (freehand path)
 - [x] Implement Magic Wand tool with flood fill algorithm
 - [x] Add selection modifiers: Add (Shift), Subtract (Alt), Intersect (Shift+Alt)
-- [ ] Integrate tools into canvas (needs tool switching system)
+- [x] Create tool type enum (`ToolType`) and controller
+- [x] Create tool selector UI widget (toolbar)
+- [x] Integrate tools into canvas via tool wrapper system
+- [x] Implement Select All command (Cmd+A)
+- [x] Implement Deselect command (Cmd+D)
+- [x] Add tool keyboard shortcuts (B, M, L, W, V, I)
 - [ ] Add tolerance slider UI for Magic Wand (0-100, default 32)
 - [ ] Add selection overlay rendering (marching ants animation)
 - [ ] Add feather option slider UI (0-100px)
-- [ ] Implement Select All command (Cmd+A)
-- [ ] Implement Deselect command (Cmd+D)
-- [ ] Add keyboard shortcuts (M, L, W keys) - needs input handler
 
 ### Step 14: Transform Operations (Model Created, Implementation Pending)
 - [x] Create `TransformState` model (matrix, bounds, type)
@@ -176,7 +178,7 @@
 - [ ] Add Cancel transform (Esc key)
 - [ ] Test with anti-aliasing and quality settings
 
-**Progress**: All selection tools implemented (Rectangle, Lasso, Magic Wand). Transform model created. Remaining: UI integration, marching ants animation, transform operations, keyboard shortcuts.
+**Progress**: All selection tools fully integrated with tool switching system and keyboard shortcuts (Rectangle, Lasso, Magic Wand). Tool selector UI added to toolbar. Commands (Cmd+A, Cmd+D) working. Transform model created. Remaining: marching ants animation, feather/tolerance UI sliders, transform operations.
 
 ---
 
