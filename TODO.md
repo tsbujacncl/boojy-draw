@@ -38,81 +38,86 @@
 
 ---
 
-## Phase 2: Canvas System (Days 4-5)
+## Phase 2: Canvas System (Days 4-5) ✅ COMPLETE
 
-### Step 5: Canvas Core
-- [ ] Create `CanvasController` (Riverpod StateNotifier)
-- [ ] Create `CanvasState` model (size, zoom, pan, rotation)
-- [ ] Implement canvas size presets (A4, Square, HD, Custom)
-- [ ] Add new canvas dialog
-- [ ] Implement checkerboard background for transparency
-- [ ] Add viewport zoom (mouse wheel, Cmd +/-)
-- [ ] Add viewport pan (Space + drag, middle mouse)
-- [ ] Add rotation (Cmd + drag handle, snap to 0/90/180/270)
+### Step 5: Canvas Core ✅
+- [x] Create `CanvasController` (Riverpod StateNotifier)
+- [x] Create `CanvasState` model (size, zoom, pan, rotation)
+- [x] Implement canvas size presets (A4, Square, HD, Custom)
+- [x] Add new canvas dialog
+- [x] Implement checkerboard background for transparency
+- [x] Add viewport zoom (mouse wheel, Cmd +/-)
+- [x] Add viewport pan (Space + drag, middle mouse)
+- [ ] Add rotation (Cmd + drag handle, snap to 0/90/180/270) - Deferred to v1.0
 
-### Step 6: Canvas Rendering
-- [ ] Create `CanvasRenderer` (CustomPainter)
-- [ ] Implement coordinate transformation (canvas ↔ screen space)
-- [ ] Add high-DPI support (devicePixelRatio)
-- [ ] Optimize for 60 FPS viewport changes
-- [ ] Add zoom level indicator in status bar
-- [ ] Add canvas size indicator in status bar
-- [ ] Test performance with 3000x3000 canvas
-
----
-
-## Phase 3: Basic Brush Engine (Days 6-8)
-
-### Step 7: Input Handling
-- [ ] Set up pointer event listeners (mouse, stylus)
-- [ ] Detect pressure sensitivity from stylus
-- [ ] Create `StrokePoint` model (position, pressure, timestamp)
-- [ ] Create `BrushStroke` model (list of points, settings)
-- [ ] Implement Kalman filter for stroke stabilization
-- [ ] Test with mouse (speed-based fallback)
-- [ ] Test with stylus (Wacom, Surface, Apple Pencil via Sidecar)
-
-### Step 8: Pencil & Pen Brushes
-- [ ] Create `BrushEngine` class
-- [ ] Implement Pencil brush (hard-edge, aliased)
-- [ ] Implement Pen brush (smooth, anti-aliased)
-- [ ] Create brush settings UI (size slider)
-- [ ] Create brush settings UI (opacity slider)
-- [ ] Add pressure curve dropdown (Linear, Ease In, Ease Out, S-Curve)
-- [ ] Implement pressure curve mapping
-- [ ] Add real-time stroke preview overlay
-- [ ] Commit stroke to active layer on pointer up
-- [ ] Add brush shortcuts (B key)
+### Step 6: Canvas Rendering ✅
+- [x] Create `CanvasRenderer` (CustomPainter)
+- [x] Implement coordinate transformation (canvas ↔ screen space)
+- [x] Add high-DPI support (devicePixelRatio)
+- [x] Optimize for 60 FPS viewport changes
+- [x] Add zoom level indicator in status bar
+- [x] Add canvas size indicator in status bar
+- [x] Test performance with 3000x3000 canvas
 
 ---
 
-## Phase 4: Layer System (Days 9-10)
+## Phase 3: Basic Brush Engine (Days 6-8) ✅ COMPLETE
 
-### Step 9: Layer Management
-- [ ] Create `Layer` model (raster, name, opacity, visible, locked, blendMode)
-- [ ] Create `LayerStack` controller (Riverpod)
-- [ ] Build layers panel UI with list
-- [ ] Add layer thumbnail rendering (64x64)
-- [ ] Add visibility toggle (eye icon)
-- [ ] Add lock toggle (lock icon)
-- [ ] Add opacity slider per layer
-- [ ] Implement New Layer (Cmd+Shift+N)
-- [ ] Implement Delete Layer (Delete key with confirmation)
-- [ ] Implement Duplicate Layer (Cmd+J)
-- [ ] Implement layer reordering (drag in panel)
-- [ ] Add active layer selection/highlight
+### Step 7: Input Handling ✅
+- [x] Set up pointer event listeners (mouse, stylus)
+- [x] Detect pressure sensitivity from stylus
+- [x] Create `StrokePoint` model (position, pressure, timestamp)
+- [x] Create `BrushStroke` model (list of points, settings)
+- [x] Implement Kalman filter for stroke stabilization
+- [x] Test with mouse (speed-based fallback)
+- [x] Test with stylus (Wacom, Surface, Apple Pencil via Sidecar)
 
-### Step 10: Compositing & Blend Modes
-- [ ] Create layer compositor (stack → flattened output)
-- [ ] Implement Normal blend mode
-- [ ] Implement Multiply blend mode
-- [ ] Implement Screen blend mode
-- [ ] Implement Overlay blend mode
-- [ ] Implement Add blend mode
-- [ ] Add blend mode dropdown in layers panel
-- [ ] Test blend modes with reference images
-- [ ] Implement Merge Down (Cmd+E)
-- [ ] Implement Flatten All (Shift+Cmd+E)
+### Step 8: Pencil & Pen Brushes ✅
+- [x] Create `BrushEngine` class
+- [x] Implement Pencil brush (hard-edge, aliased)
+- [x] Implement Pen brush (smooth, anti-aliased)
+- [x] Implement Marker brush (soft-edge, buildable opacity)
+- [x] Implement Airbrush (spray effect with falloff)
+- [x] Implement Eraser (clear pixels, respects opacity)
+- [x] Create brush settings UI (size slider)
+- [x] Create brush settings UI (opacity slider)
+- [x] Add pressure curve dropdown (Linear, Ease In, Ease Out, S-Curve)
+- [x] Implement pressure curve mapping
+- [x] Add real-time stroke preview overlay
+- [x] Commit stroke to active layer on pointer up
+- [ ] Add brush shortcuts (B key) - Deferred to Phase 5
+
+---
+
+## Phase 4: Layer System (Days 9-10) ✅ COMPLETE
+
+### Step 9: Layer Management ✅
+- [x] Create `Layer` model (raster, name, opacity, visible, locked, blendMode)
+- [x] Create `LayerStack` controller (Riverpod)
+- [x] Build layers panel UI with list
+- [x] Add layer thumbnail rendering (64x64, on-the-fly generation)
+- [x] Add visibility toggle (eye icon)
+- [x] Add lock toggle (lock icon)
+- [x] Add opacity display per layer
+- [x] Implement New Layer
+- [x] Implement Delete Layer
+- [x] Implement Duplicate Layer
+- [x] Implement layer reordering (drag in panel)
+- [x] Add active layer selection/highlight
+- [ ] Add keyboard shortcuts (Cmd+Shift+N, Cmd+J, etc.) - Deferred to Phase 8
+- [ ] Add opacity slider per layer - Deferred to v1.0
+
+### Step 10: Compositing & Blend Modes ✅
+- [x] Create layer compositor (stack → flattened output)
+- [x] Implement Normal blend mode
+- [x] Implement Multiply blend mode
+- [x] Implement Screen blend mode
+- [x] Implement Overlay blend mode
+- [x] Implement Add blend mode
+- [ ] Add blend mode dropdown in layers panel - Deferred to v1.0
+- [ ] Test blend modes with reference images - Ready for testing
+- [x] Implement Merge Down (async with compositing)
+- [x] Implement Flatten All (async with compositing)
 
 ---
 

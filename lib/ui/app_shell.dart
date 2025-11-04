@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'canvas_viewport.dart';
 import 'dialogs/new_canvas_dialog.dart';
+import 'panels/layers_panel.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/brush_controller.dart';
 import '../models/brush_stroke.dart';
@@ -237,19 +238,8 @@ class _AppShellState extends ConsumerState<AppShell> {
                   'Layers',
                   onClose: () => setState(() => _rightPanelVisible = false),
                 ),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    child: Center(
-                      child: Text(
-                        'Layers panel\n(Coming soon)',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-                  ),
+                const Expanded(
+                  child: LayersPanel(),
                 ),
               ],
             ),

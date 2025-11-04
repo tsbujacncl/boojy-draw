@@ -4,6 +4,7 @@ import '../canvas/canvas_input_handler.dart';
 import '../canvas/canvas_renderer.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/drawing_state_controller.dart';
+import '../providers/layer_stack_controller.dart';
 import '../tools/brush_tool.dart';
 
 /// Main canvas viewport widget
@@ -14,6 +15,7 @@ class CanvasViewport extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final canvasState = ref.watch(canvasControllerProvider);
     final drawingState = ref.watch(drawingStateProvider);
+    final layerStackState = ref.watch(layerStackProvider);
 
     return Container(
       decoration: const BoxDecoration(
@@ -33,10 +35,11 @@ class CanvasViewport extends ConsumerWidget {
               child: ClipRect(
                 child: Stack(
                   children: [
-                    // Canvas renderer with drawing state
+                    // Canvas renderer with drawing state and layers
                     CanvasRenderWidget(
                       canvasState: canvasState,
                       drawingState: drawingState,
+                      layerStackState: layerStackState,
                     ),
 
                     // Zoom controls overlay (bottom-right)

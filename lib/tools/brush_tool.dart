@@ -6,6 +6,7 @@ import '../models/stroke_point.dart';
 import '../providers/brush_controller.dart';
 import '../providers/canvas_controller.dart';
 import '../providers/drawing_state_controller.dart';
+import '../providers/layer_stack_controller.dart';
 import 'stroke_stabilizer.dart';
 
 /// Brush tool for drawing on canvas
@@ -46,6 +47,12 @@ class _BrushToolState extends ConsumerState<BrushTool> {
 
     final brushSettings = ref.read(brushControllerProvider);
     final canvasState = ref.read(canvasControllerProvider);
+    final layerStack = ref.read(layerStackProvider);
+
+    // Check if there's an active layer and it's not locked
+    if (layerStack.activeLayer == null || layerStack.activeLayer!.locked) {
+      return;
+    }
 
     // Convert screen coordinates to canvas coordinates
     final canvasPosition = canvasState.screenToCanvas(
@@ -74,7 +81,7 @@ class _BrushToolState extends ConsumerState<BrushTool> {
     _lastPoint = firstPoint;
     _isDrawing = true;
 
-    // Start new stroke
+    // Start new stroke on active layer
     final stroke = BrushStroke(
       points: [firstPoint],
       color: brushSettings.color,
@@ -84,7 +91,10 @@ class _BrushToolState extends ConsumerState<BrushTool> {
       blendMode: brushSettings.blendMode,
     );
 
-    ref.read(drawingStateProvider.notifier).startStroke(stroke);
+    ref.read(drawingStateProvider.notifier).startStroke(
+          stroke,
+          layerStack.activeLayerId!,
+        );
   }
 
   void _handlePointerMove(PointerMoveEvent event) {

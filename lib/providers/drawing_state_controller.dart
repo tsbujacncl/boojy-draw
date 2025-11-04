@@ -4,25 +4,40 @@ import '../models/stroke_point.dart';
 
 /// State for the current drawing session
 class DrawingState {
-  final List<BrushStroke> committedStrokes; // Finalized strokes
+  final Map<String, List<BrushStroke>> layerStrokes; // Strokes per layer ID
   final BrushStroke? currentStroke; // Stroke being drawn
+  final String? currentLayerId; // Layer for current stroke
   final bool isDrawing;
 
   const DrawingState({
-    this.committedStrokes = const [],
+    this.layerStrokes = const {},
     this.currentStroke,
+    this.currentLayerId,
     this.isDrawing = false,
   });
 
+  /// Get strokes for a specific layer
+  List<BrushStroke> getStrokesForLayer(String layerId) {
+    return layerStrokes[layerId] ?? [];
+  }
+
+  /// Get all strokes (flattened)
+  List<BrushStroke> get allStrokes {
+    return layerStrokes.values.expand((strokes) => strokes).toList();
+  }
+
   DrawingState copyWith({
-    List<BrushStroke>? committedStrokes,
+    Map<String, List<BrushStroke>>? layerStrokes,
     BrushStroke? currentStroke,
+    String? currentLayerId,
     bool? isDrawing,
     bool clearCurrentStroke = false,
+    bool clearCurrentLayerId = false,
   }) {
     return DrawingState(
-      committedStrokes: committedStrokes ?? this.committedStrokes,
+      layerStrokes: layerStrokes ?? this.layerStrokes,
       currentStroke: clearCurrentStroke ? null : (currentStroke ?? this.currentStroke),
+      currentLayerId: clearCurrentLayerId ? null : (currentLayerId ?? this.currentLayerId),
       isDrawing: isDrawing ?? this.isDrawing,
     );
   }
@@ -32,23 +47,28 @@ class DrawingState {
       identical(this, other) ||
       other is DrawingState &&
           runtimeType == other.runtimeType &&
-          committedStrokes == other.committedStrokes &&
+          layerStrokes == other.layerStrokes &&
           currentStroke == other.currentStroke &&
+          currentLayerId == other.currentLayerId &&
           isDrawing == other.isDrawing;
 
   @override
   int get hashCode =>
-      committedStrokes.hashCode ^ currentStroke.hashCode ^ isDrawing.hashCode;
+      layerStrokes.hashCode ^
+      currentStroke.hashCode ^
+      currentLayerId.hashCode ^
+      isDrawing.hashCode;
 }
 
 /// Controller for managing drawing state
 class DrawingStateController extends StateNotifier<DrawingState> {
   DrawingStateController() : super(const DrawingState());
 
-  /// Start a new stroke
-  void startStroke(BrushStroke stroke) {
+  /// Start a new stroke on a specific layer
+  void startStroke(BrushStroke stroke, String layerId) {
     state = state.copyWith(
       currentStroke: stroke,
+      currentLayerId: layerId,
       isDrawing: true,
     );
   }
@@ -63,16 +83,19 @@ class DrawingStateController extends StateNotifier<DrawingState> {
     state = state.copyWith(currentStroke: updatedStroke);
   }
 
-  /// Finish the current stroke and commit it
+  /// Finish the current stroke and commit it to the layer
   void endStroke() {
-    if (state.currentStroke == null) return;
+    if (state.currentStroke == null || state.currentLayerId == null) return;
 
-    final committed = [...state.committedStrokes, state.currentStroke!];
+    final updatedLayerStrokes = Map<String, List<BrushStroke>>.from(state.layerStrokes);
+    final layerStrokes = updatedLayerStrokes[state.currentLayerId] ?? [];
+    updatedLayerStrokes[state.currentLayerId!] = [...layerStrokes, state.currentStroke!];
 
     state = state.copyWith(
-      committedStrokes: committed,
+      layerStrokes: updatedLayerStrokes,
       isDrawing: false,
       clearCurrentStroke: true,
+      clearCurrentLayerId: true,
     );
   }
 
@@ -81,6 +104,7 @@ class DrawingStateController extends StateNotifier<DrawingState> {
     state = state.copyWith(
       isDrawing: false,
       clearCurrentStroke: true,
+      clearCurrentLayerId: true,
     );
   }
 
@@ -89,14 +113,25 @@ class DrawingStateController extends StateNotifier<DrawingState> {
     state = const DrawingState();
   }
 
-  /// Undo last stroke
-  void undo() {
-    if (state.committedStrokes.isEmpty) return;
+  /// Clear strokes for a specific layer
+  void clearLayer(String layerId) {
+    final updatedLayerStrokes = Map<String, List<BrushStroke>>.from(state.layerStrokes);
+    updatedLayerStrokes.remove(layerId);
+    state = state.copyWith(layerStrokes: updatedLayerStrokes);
+  }
 
-    final strokes = List<BrushStroke>.from(state.committedStrokes);
-    strokes.removeLast();
+  /// Undo last stroke on a specific layer
+  void undoLayer(String layerId) {
+    final layerStrokes = state.getStrokesForLayer(layerId);
+    if (layerStrokes.isEmpty) return;
 
-    state = state.copyWith(committedStrokes: strokes);
+    final updatedStrokes = List<BrushStroke>.from(layerStrokes);
+    updatedStrokes.removeLast();
+
+    final updatedLayerStrokes = Map<String, List<BrushStroke>>.from(state.layerStrokes);
+    updatedLayerStrokes[layerId] = updatedStrokes;
+
+    state = state.copyWith(layerStrokes: updatedLayerStrokes);
   }
 }
 

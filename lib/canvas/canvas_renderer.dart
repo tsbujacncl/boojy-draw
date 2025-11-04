@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../models/canvas_state.dart';
 import '../providers/drawing_state_controller.dart';
+import '../providers/layer_stack_controller.dart';
 import '../tools/brush_engine.dart';
 
 /// Custom painter for rendering the canvas
@@ -9,11 +10,13 @@ class CanvasRenderer extends CustomPainter {
   final CanvasState canvasState;
   final Size viewportSize;
   final DrawingState drawingState;
+  final LayerStackState layerStackState;
 
   const CanvasRenderer({
     required this.canvasState,
     required this.viewportSize,
     required this.drawingState,
+    required this.layerStackState,
   });
 
   @override
@@ -61,14 +64,43 @@ class CanvasRenderer extends CustomPainter {
 
     canvas.drawRect(canvasRect, borderPaint);
 
-    // Draw committed strokes
-    for (final stroke in drawingState.committedStrokes) {
-      BrushEngine.renderStroke(canvas, stroke);
-    }
+    // Draw each layer with its strokes (bottom to top)
+    for (final layer in layerStackState.layers) {
+      if (!layer.visible) continue;
 
-    // Draw current stroke being drawn
-    if (drawingState.currentStroke != null) {
-      BrushEngine.renderStroke(canvas, drawingState.currentStroke!);
+      // Save layer state for opacity and blend mode
+      canvas.saveLayer(
+        null,
+        Paint()
+          ..color = Colors.white.withValues(alpha: layer.opacity)
+          ..blendMode = layer.blendMode,
+      );
+
+      // Draw layer's image if it exists
+      if (layer.image != null) {
+        canvas.drawImage(
+          layer.image!,
+          Offset(
+            -canvasState.canvasSize.width / 2,
+            -canvasState.canvasSize.height / 2,
+          ),
+          Paint(),
+        );
+      }
+
+      // Draw layer's committed strokes
+      final layerStrokes = drawingState.getStrokesForLayer(layer.id);
+      for (final stroke in layerStrokes) {
+        BrushEngine.renderStroke(canvas, stroke);
+      }
+
+      // Draw current stroke if it belongs to this layer
+      if (drawingState.currentLayerId == layer.id &&
+          drawingState.currentStroke != null) {
+        BrushEngine.renderStroke(canvas, drawingState.currentStroke!);
+      }
+
+      canvas.restore();
     }
 
     // Restore canvas state
@@ -139,7 +171,8 @@ class CanvasRenderer extends CustomPainter {
   bool shouldRepaint(CanvasRenderer oldDelegate) {
     return oldDelegate.canvasState != canvasState ||
         oldDelegate.viewportSize != viewportSize ||
-        oldDelegate.drawingState != drawingState;
+        oldDelegate.drawingState != drawingState ||
+        oldDelegate.layerStackState != layerStackState;
   }
 
   @override
@@ -150,11 +183,13 @@ class CanvasRenderer extends CustomPainter {
 class CanvasRenderWidget extends StatelessWidget {
   final CanvasState canvasState;
   final DrawingState drawingState;
+  final LayerStackState layerStackState;
 
   const CanvasRenderWidget({
     super.key,
     required this.canvasState,
     required this.drawingState,
+    required this.layerStackState,
   });
 
   @override
@@ -173,6 +208,7 @@ class CanvasRenderWidget extends StatelessWidget {
               canvasState: canvasState,
               viewportSize: viewportSize,
               drawingState: drawingState,
+              layerStackState: layerStackState,
             ),
           ),
         );
