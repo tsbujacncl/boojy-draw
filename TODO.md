@@ -147,23 +147,24 @@
 
 ---
 
-## Phase 6: Selection & Transform (Days 13-14)
+## Phase 6: Selection & Transform (Days 13-14) 🚧 IN PROGRESS
 
-### Step 13: Selection Tools
-- [ ] Create `Selection` model (path, feather, mode)
-- [ ] Implement Rectangle selection tool (M key)
+### Step 13: Selection Tools (Partially Complete)
+- [x] Create `Selection` model (path, feather, mode)
+- [x] Create `SelectionController` (Riverpod StateNotifier)
+- [x] Implement Rectangle selection tool foundation
+- [x] Add selection modifiers: Add (Shift), Subtract (Alt), Intersect (Shift+Alt)
+- [ ] Integrate Rectangle tool into canvas (needs tool switching system)
 - [ ] Implement Lasso selection tool (L key, freehand path)
 - [ ] Implement Magic Wand tool (W key, flood fill)
 - [ ] Add tolerance slider for Magic Wand (0-100, default 32)
-- [ ] Add selection overlay rendering (marching ants)
-- [ ] Add selection modifiers: Add (Shift)
-- [ ] Add selection modifiers: Subtract (Alt)
-- [ ] Add selection modifiers: Intersect (Shift+Alt)
-- [ ] Add feather option (0-100px)
+- [ ] Add selection overlay rendering (marching ants animation)
+- [ ] Add feather option slider (0-100px)
 - [ ] Add Select All (Cmd+A)
 - [ ] Add Deselect (Cmd+D)
+- [ ] Add keyboard shortcuts (M, L, W keys)
 
-### Step 14: Transform Operations
+### Step 14: Transform Operations (Not Started)
 - [ ] Create transform overlay with handles
 - [ ] Implement Move (drag selection, arrow keys)
 - [ ] Implement Scale (corner handles, Shift = constrain aspect)
@@ -174,6 +175,8 @@
 - [ ] Add Cancel transform (Esc key)
 - [ ] Use bicubic interpolation for scale/rotate quality
 - [ ] Test with anti-aliasing
+
+**Progress**: Foundation complete (Selection model, controller, Rectangle tool). Remaining: Lasso, Magic Wand, marching ants, transforms, integration.
 
 ---
 
